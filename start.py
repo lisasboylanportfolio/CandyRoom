@@ -60,15 +60,83 @@ def hasAccess(to):
         access=True
     return access
 
+def ringPhone():
+    global ringing
+    
+    ringing = True
+    print("\n#############################################")
+    print("##   The phone is ringing                  ##")
+    print("##   If you would like to answer the phone ##")
+    print("##   you must find it and then pick it up. ##")
+    print("##        !!!!!  HURRY  !!!!!              ##")
+    print("#############################################\n")
+    
+def pickup(item="phone"):
+    global ringing
+    global moves
+    global turn_off_phone
+    
+    if moves < turn_phone_off:
+        if ringing:
+            resetRing()
+            print("\n#############################################")
+            print("##   You must find a key                   ##")
+            print("##   to enter the Candy Room.              ##")
+            print("##                                         ##")
+            print("##        Check Upstairs                   ##")
+            print("#############################################\n")            
+        else:
+            print("\nSounds like a dial tone..")
+    else:
+        resetRing()
+
+def sorry(item="phone"):
+    resetRing()
+    print("\nHmmm, this is odd. There is no dial tone on this phone\n")
+
+def resetRing():
+    global ringing
+    global moves
+    
+    ringing=False
+    moves=0
+    
 def switchRooms(old,new):
     if hasAccess(new):
-        print("\n You have moved to the", new, "\n\n")
+        global moves
+        global ringPhone
+        
+        print("\n You have moved to the", new, "\n\n")        
+        # Determine if phone should ring
+        moves +=1
+        if moves == ring_phone_on:
+            ringPhone()
         return rooms[new]
     else:
         print("\n You can not move to", new, "until you obtain the", rooms[new].toAccess, "\n\n")        
         return old
+    
+def asker(keys):
+    print("\n",keys)
+    answer=input("\n Enter a choice from menu above or 'stop': ")
+    while answer not in keys and answer != "stop":
+        print("\n#####################################\n")
+        print("# Sorry, that is not a valid choice #")
+        print("\n#####################################\n")
+        print(keys)
+        answer=input("\nEnter a choice from menu above or 'stop': ")
+        print("\n")
+    return answer
+
 
 inventory={}  # Players inventory, items remove from rooms
+
+# Variables to manage the changing state of the phone
+# ringing or not ringing
+moves=0
+ring_phone_on=3
+ringing=False
+turn_phone_off=7
 
 rooms = {
     'porch': Room(
@@ -127,7 +195,7 @@ and the cook has the day off.\nAnd be careful, the china cabinet is a little roc
             "search" : search,
             "stop": stop,
 },        
-        adjacentRooms=['foyer','kichen'],                
+        adjacentRooms=['foyer','kitchen'],                
     ),
     'kitchen': Room(
         'kitchen',
@@ -145,7 +213,8 @@ Aso, if you wouldn't mind, answering the phone if it rings....Thanks\n",
         actions={
             "move"  : move,        
             "search" : search,
-            "stop"   : stop,            
+            "stop"   : stop,
+            "pickup": pickup,
         },
         adjacentRooms=['dining room','stairs up'],                
     ),
@@ -302,23 +371,12 @@ A TV hangs above a dresser on the wall opposite the bed. To the left of the dres
         actions={
             "move"  : move,        
             "search" : search,
-            "stop"   : stop,            
+            "stop"   : stop,
+            "pickup": sorry,
         },
         adjacentRooms=["hallway"],
     ),
 }
-    
-def asker(keys):
-    print("\n",keys)
-    answer=input("\n Enter a choice from menu above or 'stop': ")
-    while answer not in keys and answer != "stop":
-        print("\n#####################################\n")
-        print("# Sorry, that is not a valid choice #")
-        print("\n#####################################\n")
-        print(keys)
-        answer=input("\nEnter a choice from menu above or 'stop': ")
-        print("\n")
-    return answer
                    
 def main():
     print('Welcome to the Candy House.\n\n\
