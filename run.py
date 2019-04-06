@@ -14,22 +14,22 @@ def move(room):
     
 def search(room):
     print("\n What would you like to search?")
-    not_searched = list(room.archFeatures.keys())
-    answer = asker(not_searched)
+    answer = asker(list(room.archFeatures.keys()))
     
-    while answer != "stop" and room.archFeatures[answer] == None and len(not_searched) > 1:
+    while answer != "stop" and room.archFeatures[answer] == None and len(room.archFeatures.keys()) > 0:
         print("\n Sorry, nothing there. What else would you like to search?")
-        not_searched.remove(answer)        
-        answer = asker(not_searched)
-        
-    if (len(not_searched) == 1 and room.archFeatures[answer] == None) or (len(not_searched) == 0) and answer != "stop" :
+        room.removeArchFeatures(answer)        
+        answer = asker(list(room.archFeatures.keys()))
+    
+    if answer == "stop":
+        pass
+    elif room.archFeatures[answer] == None:
         print("The", room.name, " has nothing to offer\n")
         print("You should move and search somewhere else")
-    elif answer == "stop":
-        pass
-    else:
+    else:             
         # Add item to inventory and see if access granted to adjacent rooms
         addInventory(room, answer)
+        room.removeArchFeatures(answer) # Remove the feature from the room        
         # loop through adjacent rooms to determine if item grants access
         for aRoom in room.adjacentRooms:
             if rooms[aRoom].toAccess != None:
@@ -117,15 +117,10 @@ def switchRooms(old,new):
         return old
     
 def asker(keys):
-    print("\n",keys)
-    answer=input("\n Enter a choice from menu above or 'stop': ")
-    while answer not in keys and answer != "stop":
-        print("\n#####################################\n")
-        print("# Sorry, that is not a valid choice #")
-        print("\n#####################################\n")
-        print(keys)
-        answer=input("\nEnter a choice from menu above or 'stop': ")
-        print("\n")
+    answer=None
+    while answer not in keys and answer != 'stop':
+        print(keys)        
+        answer=input("\n Enter a choice from menu above or 'stop': ")
     return answer
 
 
@@ -395,7 +390,7 @@ Then see if you can find and access the rumored Candy Room. \n\
             original_room = room
             print(room.description)
         answer = asker(list(room.actions.keys()))
-        functionToCall = room.actions[answer]
+        functionToCall = room.actions[answer]                
         if answer == "move" :
             room=functionToCall(room)
         else:

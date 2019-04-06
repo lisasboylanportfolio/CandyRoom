@@ -4,7 +4,7 @@ class Room:
         self.name=name
         self.description=description
         self.inventory=inventory
-        self.origiinalInventory=inventory        
+        self.originalarchFeatures=archFeatures        
         self.archFeatures=archFeatures
         self.actions=actions
         self.adjacentRooms=adjacentRooms
@@ -26,3 +26,16 @@ class Room:
                 return False
         else:
             return False
+        
+    def getOriginalArchFeatures():
+        return self.originalArchFeatures
+    
+    def getArchFeatures():
+        return self.archFeatures
+    
+    def removeArchFeatures(self, item):
+        if len(self.archFeatures) > 0:
+            del self.archFeatures[item]
+            
+    def resetArchFeatures():
+        self.archFeatures = self.originalArchFeatures
